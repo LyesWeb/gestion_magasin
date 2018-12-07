@@ -1,7 +1,12 @@
 package mVentes;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Collection;
+
+import javax.tools.Tool;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -11,11 +16,16 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -26,6 +36,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import mCategories.CategorieJavaFxForPrd;
+import packfx.Tools;
+import sun.applet.Main;
 
 public class VenteJavaFxVue extends Application{
 	public static boolean bAdd = false;
@@ -33,8 +47,9 @@ public class VenteJavaFxVue extends Application{
 	public static boolean bAddLC = false;
 	public static boolean bDeleteLC = false;
 	Button btnAjouter = new Button("Ajouter");
+	Button add = new Button("add");
 	Button btnModifier = new Button("Modifier");
-	Button btnSupprimer = new Button("Supprimer");
+	ImageView btnicon = new ImageView();
 	Button btnAjouterLC = new Button("Ajouter des lignes de commande");
 	Button btnSupprimerLC = new Button("Lignes des commandes");
 	Button btnAnnuler = new Button("Annuler");
@@ -43,7 +58,7 @@ public class VenteJavaFxVue extends Application{
 	public static Vente venteSelected = null;
 	public static TableView<Vente> table = new TableView<>();
 	public static ObservableList<Vente> ventes = FXCollections.observableArrayList();
-
+	
 	private static void getVentes(){
 		ventes.clear();
 		Collection<Vente> vts = vdao.getAll();
@@ -124,22 +139,22 @@ public class VenteJavaFxVue extends Application{
             	} catch (Exception e) { message.setFill(Color.RED); message.setText("Erreur !"); }
             }
         });
-		Button add=new Button("add");
-		pane.getChildren().add(add);
 		add.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-            	VenteAdd frmJPrd = new VenteAdd();
-                Stage w = new Stage();
-                try {
-					frmJPrd.start(w);
+                VenteAdd frmAdd = new VenteAdd();
+            	Stage w = new Stage();
+            	try {
+					frmAdd.start(w);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
             }
         });
+		pane.getChildren().add(add);
 		pane.getChildren().add(btnModifier);
+		
 		btnModifier.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
@@ -166,24 +181,9 @@ public class VenteJavaFxVue extends Application{
 		    	}
             }
         });
-		pane.getChildren().add(btnSupprimer);
-		btnSupprimer.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-            	try {
-					if(venteSelected != null){
-	            		deleteVente(venteSelected.getCodev());
-	            		message.setFill(Color.LIMEGREEN);
-	            		message.setText("Vente supprimer avec succes.");
-	            	}else{
-	            		message.setFill(Color.RED);
-	            		message.setText("Veuillez selectionner une vente !");
-	            	}
-				} catch (Exception e) {
-					message.setText("Erreur !");
-				}
-            }
-        });
+		
+		
+		
 		pane.getChildren().add(btnAjouterLC);
 		btnAjouterLC.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -255,6 +255,93 @@ public class VenteJavaFxVue extends Application{
 		return pane;
 	}
 
+	private void addButtonToTable() {
+        TableColumn<Vente, Void> colBtn = new TableColumn("Opérations");
+       
+        
+        
+        Callback<TableColumn<Vente, Void>, TableCell<Vente, Void>> cellFactory = new Callback<TableColumn<Vente, Void>, TableCell<Vente, Void>>() {
+            @Override
+            public TableCell<Vente, Void> call(final TableColumn<Vente, Void> param) {
+                final TableCell<Vente, Void> cell = new TableCell<Vente, Void>() {
+                	
+                	
+                	
+                    private final Button btn1 = new Button("");
+
+                    {
+                    	
+                        btn1.setOnAction((ActionEvent event) -> {
+                            Vente Vente = getTableView().getItems().get(getIndex());
+                            System.out.println("selectedVente: " + Vente.getCodev());
+                        });
+                        
+                    }
+                  
+                    private final Button btn2 = new Button("");
+
+                    {
+                        btn2.setOnAction((ActionEvent event) -> {
+                        	Vente Vente = getTableView().getItems().get(getIndex());
+                        
+                        	try {
+            					
+            	            		deleteVente(Vente.getCodev());
+            	            		message.setFill(Color.LIMEGREEN);
+            	            		message.setText("Vente supprimer avec succes.");
+            	            	
+            				} catch (Exception e) {
+            					message.setText("Erreur !");
+            				}
+                        });
+                    }
+
+                    
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                        	ImageView imgview = new ImageView();
+                        	try {
+								imgview=Tools.createImageView("photosStock/Delete.png");
+							} catch (FileNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+                        	imgview.setFitHeight(15);
+                        	imgview.setFitWidth(15);
+                        	btn2.setGraphic(imgview);
+                        	btn2.setPrefHeight(10);
+                        	ImageView imgview2 = new ImageView();
+                        	try {
+								imgview2=Tools.createImageView("photosStock/Affiche.png");
+							} catch (FileNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+                        	imgview2.setFitHeight(15);
+                        	imgview2.setFitWidth(15);
+                        	btn1.setGraphic(imgview2);
+                        	btn1.setPrefHeight(10);
+                        	HBox pane = new HBox(btn2, btn1);
+                        	setGraphic(pane);
+                            
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+        
+        colBtn.setCellFactory(cellFactory);
+        
+
+        table.getColumns().add(colBtn);
+
+    }
+	
 	private  Pane createContentTop(){
 		Pane pane = new VBox();
 		((VBox)pane).setSpacing(10);
@@ -268,8 +355,11 @@ public class VenteJavaFxVue extends Application{
 		totalvCol.setCellValueFactory(new  PropertyValueFactory<>("totalv"));
 		TableColumn<Vente, String> clientCol = new TableColumn<>("Client");
 		clientCol.setCellValueFactory(new  PropertyValueFactory<>("clientv"));
+		
 		table.getColumns().addAll(codevCol, datevCol, totalvCol, clientCol);
+		clientCol.setPrefWidth(600);
 		table.setItems(ventes);
+		addButtonToTable();
 		table.setRowFactory(obj->{
 				TableRow<Vente> row = new TableRow<>();
 				row.setOnMouseClicked(event->{
