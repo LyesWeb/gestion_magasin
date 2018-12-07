@@ -358,6 +358,7 @@ public class VenteJavaFxVue extends Application{
 		
 		table.getColumns().addAll(codevCol, datevCol, totalvCol, clientCol);
 		clientCol.setPrefWidth(600);
+		codevCol.setPrefWidth(30);
 		table.setItems(ventes);
 		addButtonToTable();
 		table.setRowFactory(obj->{
