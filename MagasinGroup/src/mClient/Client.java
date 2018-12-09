@@ -1,4 +1,4 @@
-package packfx;
+package mClient;
 
 public class Client {
 
@@ -68,8 +68,10 @@ public class Client {
 	
 	@Override
 	public String toString() {
-		return "Client [id=" + id + ", nom=" + nom + ", prenom=" + prenom + ", tele=" + tele + ", email=" + email
-				+ ", adresse=" + adresse + "]";
+		return this.getNom()+" "+this.getPrenom();
+	}
+	public String getNomPrenom() {
+		return this.getNom()+" "+this.getPrenom();
 	}
 	
 }

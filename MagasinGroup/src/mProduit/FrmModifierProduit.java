@@ -1,4 +1,4 @@
-package packfx;
+package mProduit;
 
 import java.io.File;
 
@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import mCategories.Categorie;
 import mCategories.CategorieJavaFxForPrd;
 import mCategories.CategorieJavaFxVue;
+import mProgramme.ApplicationJavaFx;
 
 public class FrmModifierProduit extends Application{
 

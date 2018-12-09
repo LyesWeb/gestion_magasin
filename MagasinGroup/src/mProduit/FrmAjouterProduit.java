@@ -1,4 +1,4 @@
-package packfx;
+package mProduit;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,6 +33,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mCategories.CategorieJavaFxForPrd;
+import mProgramme.ApplicationJavaFx;
+import mTools.Tools;
 
 public class FrmAjouterProduit extends Application{
 

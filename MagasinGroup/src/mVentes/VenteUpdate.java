@@ -37,13 +37,14 @@ import mProduit.ProduitDaoImpl;
 import mTools.AutoCompleteComboBoxListener;
 import mTools.Tools;
 
-public class VenteAdd extends Application{
-	
+public class VenteUpdate extends Application{
+	public Vente venteSelected = VenteJavaFxVue.codeVenteSelected;	
 	public static Text comp = new Text();
 	public static TableView<LC> LC = new TableView<LC>();
 	public ProduitDaoImpl db = new ProduitDaoImpl();
 	public VenteDaoImpl vdb = new VenteDaoImpl();
-	public long idVente = vdb.getLastId();
+	public LCDaoImpl lcdb = new LCDaoImpl();
+	public long idVente = venteSelected.getCodev();
 	public DatePicker date = new DatePicker();
 	public ComboBox<String> client = new ComboBox<>();
 	public ClientDaoImpl dbClient = new ClientDaoImpl();
@@ -62,7 +63,7 @@ public class VenteAdd extends Application{
 	public void start(Stage window) throws Exception {
 		window.setWidth(1000);
 		window.setHeight(700);
-		window.setTitle("Ajouter une nouvelle vente");
+		window.setTitle("Modifier Vente n: "+idVente);
 		BorderPane brd = new BorderPane();
 		brd.setTop(createContentTopTitle());
 		brd.setCenter(createContentCenter());
@@ -79,7 +80,7 @@ public class VenteAdd extends Application{
 		pane.setId("headTitle");
 		pane.setMinHeight(80);
 		((HBox)pane).setAlignment(Pos.CENTER_LEFT);
-		Text titre = new Text("Ajouter une nouvelle Vente :");
+		Text titre = new Text("Modifier Vente n: "+idVente);
 		titre.setFont(Font.font("Calibri", FontWeight.BOLD, 20));
 		titre.setFill(Color.WHITE);
 		pane.getChildren().add(titre);
@@ -90,7 +91,7 @@ public class VenteAdd extends Application{
 		Pane pane = new HBox();
 		pane.setStyle("-fx-padding: 0 15 0 15");
 		//##### Date #####//
-		date.setValue(Tools.NOW_LOCAL_DATE());
+		date.setValue(Tools.convertToLocalDateViaInstant(venteSelected.getDatev()));
 		VBox dateBox = new VBox();
 		((VBox) dateBox).setSpacing(10);
 		dateBox.setMinWidth(333);
@@ -115,17 +116,23 @@ public class VenteAdd extends Application{
 		clientBox.setMinWidth(300);
 		Text clientTxt = new Text("Client :");
 		// fill the comboBox from db
-		for(Client c:dbClient.getAll()) {			
+		int i = 0;
+		int j = 0;
+		for(Client c:dbClient.getAll()) {
+			if(venteSelected.getClientv().getNom().equals(c.getNom())) {
+				j=i;
+			}
 			client.getItems().add(c.getNom());
+			
+			i++;
 		}
         new AutoCompleteComboBoxListener<>(client);
         client.valueProperty().addListener(new ChangeListener<String>() {
-            @Override public void changed(ObservableValue ov, String t, String t1) {
-//              System.out.println(ov);
-//                System.out.println(t);
-//                System.out.println(t1);
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
             }    
         });
+        client.getSelectionModel().select(j);
 		clientBox.getChildren().addAll(clientTxt,client);
 		//##### Client Vente #####//
 		
@@ -215,7 +222,13 @@ public class VenteAdd extends Application{
     	product.getSelectionModel().clearSelection();
     	product.requestFocus();
 	}
-	
+	private void fillTable() {
+		for(LC lc:vdb.getLCs(venteSelected.getCodev())) {
+			LC.getItems().add(lc);
+			total += lc.getQt()*lc.getSoustotal();
+		}
+		totalText.setText("Total : "+total+" DH");
+	}
 	private void addButtonToTable() {
         TableColumn<LC, Void> colBtn = new TableColumn("Opérations");
         Callback<TableColumn<LC, Void>, TableCell<LC, Void>> cellFactory = new Callback<TableColumn<LC, Void>, TableCell<LC, Void>>() {
@@ -260,6 +273,7 @@ public class VenteAdd extends Application{
     }
 	
 	private Pane createVenteTableLC() {
+		LC.getItems().clear();
 		LC.setPlaceholder(new Label("Pas de lignes de commande dans le tableau, Ajoutez les !"));
 		Pane pane = new HBox();
 		pane.setStyle("-fx-padding: 0 15 0 15");
@@ -293,7 +307,7 @@ public class VenteAdd extends Application{
 		productCol.setMinWidth(200);
 		LC.getColumns().addAll(idCol, productCol, prixCol, qteCol);
 //        LC.getColumns().add(totoCol);
-
+		fillTable();
 		addButtonToTable();
 		pane.getChildren().addAll(tableBox);
 		return pane;
@@ -310,31 +324,26 @@ public class VenteAdd extends Application{
 		paneFooter.setMaxWidth(940);
 		//##### footer buttons #####//
 		((HBox) footerBox).setSpacing(10);
-		Button add = new Button("Ajouter");
+		Button update = new Button("Mise a jour");
 		Button cancel = new Button("Annuler");
-		footerBox.getChildren().addAll(add,cancel);
+		footerBox.getChildren().addAll(update,cancel);
 		//##### footer buttons #####//
 	
-		add.setOnAction(new EventHandler<ActionEvent>() {
+		update.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-            	if(client.getValue()!=null && date.getValue()!=null && LC.getItems().size()>0) {
-            		Client clientVente = new Client();
-            		java.sql.Date datev = java.sql.Date.valueOf(date.getValue());
+            	if(client.getValue()!=null && date.getValue()!=null && LC.getItems().size()>0) {            		java.sql.Date datev = java.sql.Date.valueOf(date.getValue());
                 	newVente = new Vente(idVente, datev,dbClient.getOne(client.getValue()));
+                	newVente.setTotalv(0);
                 	for(LC lc:LC.getItems()) {
                 		newVente.addLC(lc);
                 	}
-                	vdb.insert(newVente);
-                	LC.getItems().clear();
-                	total = 0;
-                	updateTotalText();
+                	lcdb.updateOrInsert(newVente);
                 	try {
                 		Stage stage = (Stage) cancel.getScene().getWindow();
                 	    stage.close();
     				} catch (Exception e) {
     				}
-                	client.getSelectionModel().clearSelection();
             	}else {
             		messageText.setText("Entrer tout les informations");
             	}

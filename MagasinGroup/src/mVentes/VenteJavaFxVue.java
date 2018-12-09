@@ -1,13 +1,8 @@
 package mVentes;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.Collection;
-
-import javax.tools.Tool;
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,11 +16,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -34,12 +25,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import mCategories.CategorieJavaFxForPrd;
-import packfx.Tools;
-import sun.applet.Main;
+import mTools.Tools;
 
 public class VenteJavaFxVue extends Application{
 	public static boolean bAdd = false;
@@ -48,7 +36,6 @@ public class VenteJavaFxVue extends Application{
 	public static boolean bDeleteLC = false;
 	Button btnAjouter = new Button("Ajouter");
 	Button add = new Button("add");
-	Button btnModifier = new Button("Modifier");
 	ImageView btnicon = new ImageView();
 	Button btnAjouterLC = new Button("Ajouter des lignes de commande");
 	Button btnSupprimerLC = new Button("Lignes des commandes");
@@ -58,7 +45,7 @@ public class VenteJavaFxVue extends Application{
 	public static Vente venteSelected = null;
 	public static TableView<Vente> table = new TableView<>();
 	public static ObservableList<Vente> ventes = FXCollections.observableArrayList();
-	
+	public static Vente codeVenteSelected = null;
 	private static void getVentes(){
 		ventes.clear();
 		Collection<Vente> vts = vdao.getAll();
@@ -116,29 +103,6 @@ public class VenteJavaFxVue extends Application{
 	private Pane createContentBottom(){
 		Pane pane = new HBox();
 		((HBox)pane).setSpacing(15);
-		pane.getChildren().add(btnAjouter);
-		btnAjouter.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-                VenteJavaFxFormINSERT frmAddV = new VenteJavaFxFormINSERT();
-            	Stage w = new Stage();
-            	Stage stage;
-            	message.setText("");
-            	try {
-            		if(bAdd == true){
-            			if(VenteJavaFxFormINSERT.messageSelect != null){
-            				stage = (Stage)VenteJavaFxFormINSERT.messageSelect.getScene().getWindow();
-            				if(!stage.isShowing()){
-            					frmAddV.start(w); }
-            		}}
-	            } catch (Exception e) { System.out.println("Erreur !"); }
-            	try {
-            		if(bAdd == false){
-            			frmAddV.start(w); bAdd = true;
-            		}
-            	} catch (Exception e) { message.setFill(Color.RED); message.setText("Erreur !"); }
-            }
-        });
 		add.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
@@ -153,91 +117,6 @@ public class VenteJavaFxVue extends Application{
             }
         });
 		pane.getChildren().add(add);
-		pane.getChildren().add(btnModifier);
-		
-		btnModifier.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-            	if(venteSelected != null){
-            	VenteJavaFxFormUPDATE frmU = new VenteJavaFxFormUPDATE();
-            	Stage w = new Stage();
-            	Stage stage;
-            	try {
-	            		if(bUpdate == true){
-	            			if(VenteJavaFxFormUPDATE.messageSelect != null){
-	            				stage = (Stage)VenteJavaFxFormUPDATE.messageSelect.getScene().getWindow();
-	            				if(!stage.isShowing()){
-	            					frmU.start(w); }
-	            		}}
-	            	} catch (Exception e) { System.out.println("Erreur !"); }
-	            	try {
-	            		if(bUpdate == false){
-	            			frmU.start(w); bUpdate = true;
-	            		}
-	            	} catch (Exception e) { message.setFill(Color.RED); message.setText("Erreur !"); }
-	            }else{
-		    		message.setFill(Color.RED);
-		    		message.setText("Veuillez selectionner une vente !");
-		    	}
-            }
-        });
-		
-		
-		
-		pane.getChildren().add(btnAjouterLC);
-		btnAjouterLC.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {            	
-            	if(venteSelected != null){
-            		VenteJavaFxFormINSERTLC frmAddLC = new VenteJavaFxFormINSERTLC();
-                	Stage w = new Stage();
-                	Stage stage;
-                	try {
-    	            		if(bAddLC == true){
-    	            			if(VenteJavaFxFormINSERTLC.messageSelect != null){
-    	            				stage = (Stage)VenteJavaFxFormINSERTLC.messageSelect.getScene().getWindow();
-    	            				if(!stage.isShowing()){
-    	            					frmAddLC.start(w); }
-    	            		}}
-    	            	} catch (Exception e) { System.out.println("Erreur !"); }
-    	            	try {
-    	            		if(bAddLC == false){
-    	            			frmAddLC.start(w); bAddLC = true;
-    	            		}
-	            	} catch (Exception e) { message.setFill(Color.RED); message.setText("Erreur !"); }
-	            }else{
-		    		message.setFill(Color.RED);
-		    		message.setText("Veuillez selectionner une vente !");
-		    	}
-            }
-        });
-		pane.getChildren().add(btnSupprimerLC);
-		btnSupprimerLC.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-            	if(venteSelected != null){
-	               VenteJavaFxFormDELETELC frmDLC = new VenteJavaFxFormDELETELC();
-                	Stage w = new Stage();
-                	Stage stage;
-                	try {
-    	            		if(bDeleteLC == true){
-    	            			if(VenteJavaFxFormDELETELC.message != null){
-    	            				stage = (Stage)VenteJavaFxFormDELETELC.message.getScene().getWindow();
-    	            				if(!stage.isShowing()){
-    	            					frmDLC.start(w); }
-    	            		}}
-    	            	} catch (Exception e) { System.out.println("Erreur !"); }
-    	            	try {
-    	            		if(bDeleteLC == false){
-    	            			frmDLC.start(w); bDeleteLC = true;
-    	            		}
-	            	} catch (Exception e) { message.setFill(Color.RED); message.setText("Erreur !"); }
-            	}else{
-            		message.setFill(Color.RED);
-            		message.setText("Veuillez selectionner une vente !");
-            	}
-            }
-        });
 		pane.getChildren().add(btnAnnuler);
 		btnAnnuler.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -257,46 +136,51 @@ public class VenteJavaFxVue extends Application{
 
 	private void addButtonToTable() {
         TableColumn<Vente, Void> colBtn = new TableColumn("Opérations");
-       
-        
-        
         Callback<TableColumn<Vente, Void>, TableCell<Vente, Void>> cellFactory = new Callback<TableColumn<Vente, Void>, TableCell<Vente, Void>>() {
             @Override
             public TableCell<Vente, Void> call(final TableColumn<Vente, Void> param) {
                 final TableCell<Vente, Void> cell = new TableCell<Vente, Void>() {
-                	
-                	
-                	
                     private final Button btn1 = new Button("");
-
                     {
-                    	
                         btn1.setOnAction((ActionEvent event) -> {
-                            Vente Vente = getTableView().getItems().get(getIndex());
-                            System.out.println("selectedVente: " + Vente.getCodev());
+                        	Vente Vente = getTableView().getItems().get(getIndex());
+                            codeVenteSelected=Vente;
+                            VenteShow frmDLC = new VenteShow();
+                        	Stage w = new Stage();
+                        	try {
+								frmDLC.start(w);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
                         });
-                        
                     }
-                  
                     private final Button btn2 = new Button("");
-
                     {
                         btn2.setOnAction((ActionEvent event) -> {
                         	Vente Vente = getTableView().getItems().get(getIndex());
-                        
                         	try {
-            					
             	            		deleteVente(Vente.getCodev());
             	            		message.setFill(Color.LIMEGREEN);
             	            		message.setText("Vente supprimer avec succes.");
-            	            	
             				} catch (Exception e) {
             					message.setText("Erreur !");
             				}
                         });
                     }
-
-                    
+                    private final Button btn3 = new Button("");
+                    {
+                        btn3.setOnAction((ActionEvent event) -> {
+                        	Vente Vente = getTableView().getItems().get(getIndex());
+                            codeVenteSelected=Vente;
+                            VenteUpdate frmUp = new VenteUpdate();
+                        	Stage w = new Stage();
+                        	try {
+                        		frmUp.start(w);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+                        });
+                    }
                     @Override
                     public void updateItem(Void item, boolean empty) {
                         super.updateItem(item, empty);
@@ -314,6 +198,7 @@ public class VenteJavaFxVue extends Application{
                         	imgview.setFitWidth(15);
                         	btn2.setGraphic(imgview);
                         	btn2.setPrefHeight(10);
+                        	/////////////
                         	ImageView imgview2 = new ImageView();
                         	try {
 								imgview2=Tools.createImageView("photosStock/Affiche.png");
@@ -325,21 +210,29 @@ public class VenteJavaFxVue extends Application{
                         	imgview2.setFitWidth(15);
                         	btn1.setGraphic(imgview2);
                         	btn1.setPrefHeight(10);
-                        	HBox pane = new HBox(btn2, btn1);
+                        	//////////
+                        	ImageView imgview3 = new ImageView();
+                        	try {
+								imgview3=Tools.createImageView("photosStock/edit.png");
+							} catch (FileNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+                        	imgview3.setFitHeight(15);
+                        	imgview3.setFitWidth(15);
+                        	btn3.setGraphic(imgview3);
+                        	btn3.setPrefHeight(10);
+                        	//////////
+                        	HBox pane = new HBox(btn2, btn1, btn3);
                         	setGraphic(pane);
-                            
                         }
                     }
                 };
                 return cell;
             }
         };
-        
         colBtn.setCellFactory(cellFactory);
-        
-
         table.getColumns().add(colBtn);
-
     }
 	
 	private  Pane createContentTop(){
@@ -389,7 +282,7 @@ public class VenteJavaFxVue extends Application{
 		((HBox)pane).setAlignment(Pos.CENTER_LEFT);
 		Text titre = new Text(" Liste des ventes :");
 		titre.setFont(Font.font("Calibri", FontWeight.BOLD, 20));
-		titre.setFill(Color.WHITE);
+		titre.setFill(Color.WHITE);		
 		pane.getChildren().add(titre);
 		return pane;
 	}

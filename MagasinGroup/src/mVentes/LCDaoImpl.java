@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import mCategories.Categorie;
 import mDonnees.AbstractDao;
-import packfx.Produit;
+import mProduit.Produit;
 
 
 public class LCDaoImpl implements LCDao{
@@ -166,5 +166,28 @@ public class LCDaoImpl implements LCDao{
 			return null;
 		}
 	}
-
+	public void updateOrInsert(Vente v) {
+		try {
+			ArrayList<LC> lcs = v.getLignesCommande();
+			Connection conn = AbstractDao.getCon().getConnexion();
+			for(LC lc:lcs) {
+				PreparedStatement ps = conn.prepareStatement("INSERT INTO lc(codelc,qt,soustotal,codeprd,codevente) \r\n" + 
+						"VALUES (?,?,?,?,?) \r\n" + 
+						"ON DUPLICATE KEY UPDATE qt = ?;");
+				ps.setLong(1, lc.getCodelc());
+				ps.setLong(2, lc.getQt());
+				ps.setDouble(3, lc.getProduitlc().getPrixVente());
+				ps.setLong(4, lc.getProduitlc().getCode());
+				ps.setLong(5, lc.getCodevente());
+				ps.setLong(6, lc.getQt());
+				ps.executeUpdate();
+//				System.out.println("INSERT INTO lc(codelc,qt,soustotal,codeprd,codevente) \r\n" + 
+//						"VALUES ("+lc.getCodelc()+","+lc.getQt()+","+lc.getProduitlc().getPrixVente()+","+lc.getProduitlc().getCode()+","+lc.getCodevente()+") \r\n" + 
+//						"ON DUPLICATE KEY UPDATE qt = "+lc.getQt()+";");
+				ps.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }

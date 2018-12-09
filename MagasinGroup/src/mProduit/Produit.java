@@ -1,4 +1,4 @@
-package packfx;
+package mProduit;
 
 import mCategories.*;
 
@@ -69,8 +69,7 @@ public class Produit {
 
 	@Override
 	public String toString() {
-		return "Produit [code=" + code + ", designation=" + designation + ", prixAchat="
-				+ prixAchat + ", prixVente=" + prixVente + ", cat=" + cat + "]";
+		return this.getDesignation();
 	}	
 	
 }

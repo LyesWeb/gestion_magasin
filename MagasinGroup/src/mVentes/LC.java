@@ -1,6 +1,6 @@
 package mVentes;
 
-import packfx.Produit;
+import mProduit.Produit;
 
 public class LC {
 
@@ -16,6 +16,13 @@ public class LC {
 	public LC(long codelc, int qt, double soustotal, Produit produitlc, long codevente) {
 		super();
 		this.codelc = codelc;
+		this.qt = qt;
+		this.soustotal = soustotal;
+		this.produitlc = produitlc;
+		this.codevente = codevente;
+	}
+	public LC(int qt, double soustotal, Produit produitlc, long codevente) {
+		super();
 		this.qt = qt;
 		this.soustotal = soustotal;
 		this.produitlc = produitlc;

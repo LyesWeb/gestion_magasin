@@ -7,8 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import packfx.Client;
+import mCategories.Categorie;
+import mClient.Client;
+import mProduit.Produit;
 import mDonnees.AbstractDao;
+import mDonnees.Config;
 
 public class VenteDaoImpl implements VenteDao {
 
@@ -21,6 +24,7 @@ public class VenteDaoImpl implements VenteDao {
 			ps.setDouble(2, v.getTotalv());
 			ps.setLong(3, v.getClientv().getId());
 			ps.executeUpdate();
+			saveLCs(v);
 			ps.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -124,14 +128,45 @@ public class VenteDaoImpl implements VenteDao {
 	}
 	public static int getLastId() {
 		Connection conn = AbstractDao.getCon().getConnexion();
-		String req = "SELECT max(codev) FROM `vente`";
+		String req = "SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '"+Config.dbName+"' AND TABLE_NAME = 'vente'";
 		try {
 			PreparedStatement ps = conn.prepareStatement(req);
 			ResultSet rs = ps.executeQuery();
 			rs.next();
-			return rs.getInt(1)+1;
+			return rs.getInt(1);
 		} catch (SQLException e) {
 			return 0;
+		}
+	}
+
+	public static void saveLCs(Vente v) {
+		LCDaoImpl lcd = new LCDaoImpl();
+		for(LC lc:v.getLignesCommande()) {
+			lcd.insert(lc);
+		}
+	}
+	public Collection<LC> getLCs(long ventId) {
+		try {
+			Connection conn = AbstractDao.getCon().getConnexion();
+			Collection<LC> LCs = new ArrayList<>();
+			String req = "SELECT * FROM lc,produit,categorie WHERE codeprd=code and codecat=codecateg and codevente=?";
+			PreparedStatement ps = conn.prepareStatement(req);
+			ps.setLong(1, ventId);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next())
+			{
+				LC lc = new LC();
+				lc.setCodelc(Long.parseLong(rs.getString("codelc")));
+				lc.setQt(rs.getInt("qt"));
+				lc.setSoustotal(rs.getDouble("soustotal"));
+				lc.setCodevente(rs.getLong("codevente"));
+				lc.setProduitlc(new Produit(rs.getLong("code"),rs.getString("designation"), rs.getDouble("prixAchat"), rs.getDouble("prixVente"), new Categorie(rs.getLong("codecateg"),rs.getString("intitule"))));
+				LCs.add(lc);
+			}
+			conn.close();
+			return LCs;
+		} catch (Exception e) {
+			return null;
 		}
 	}
 

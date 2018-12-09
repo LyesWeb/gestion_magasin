@@ -1,4 +1,4 @@
-package packfx;
+package mProduit;
 
 import java.util.Collection;
 

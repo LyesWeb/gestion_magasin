@@ -1,4 +1,4 @@
-package packfx;
+package mProduit;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import mCategories.Categorie;
 import mDonnees.AbstractDao;
+import mDonnees.Config;
 
 public class ProduitDaoImpl extends AbstractDao implements ProduitDao {
 
@@ -111,12 +112,12 @@ public class ProduitDaoImpl extends AbstractDao implements ProduitDao {
 	}
 	public static int getCount() {
 		Connection conn = AbstractDao.getCon().getConnexion();
-		String req = "SELECT max(code) FROM produit";
+		String req = "SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '"+Config.dbName+"' AND TABLE_NAME = 'produit'";
 		try {
 			PreparedStatement ps = conn.prepareStatement(req);
 			ResultSet rs = ps.executeQuery();
 			rs.next();
-			return rs.getInt(1)+1;
+			return rs.getInt(1);
 		} catch (SQLException e) {
 			return 0;
 		}

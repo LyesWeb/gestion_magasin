@@ -1,7 +1,14 @@
-package mDonnees;
+package mTools;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -37,6 +44,21 @@ public class Tools {
 		text.setFont(Font.font("Verdana", f, taille));
 		text.setFill(color);
 		//txt.setStroke(Color.web("#7080A0"));
+	}
+	public static final LocalDate NOW_LOCAL_DATE (){
+        String date = new SimpleDateFormat("dd-MM-yyyy").format(Calendar.getInstance().getTime());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate localDate = LocalDate.parse(date , formatter);
+        return localDate;
+    }
+	
+	public static Date fromLocalDate(LocalDate date) {
+	    Instant instant = date.atStartOfDay().atZone(ZoneId.systemDefault())
+	        .toInstant();
+	    return Date.from(instant);
+	}
+	public static LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
+		return new java.sql.Date(dateToConvert.getTime()).toLocalDate();
 	}
 	
 }

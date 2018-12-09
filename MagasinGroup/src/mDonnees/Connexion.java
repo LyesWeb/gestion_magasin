@@ -3,13 +3,11 @@ package mDonnees;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import packfx.ApplicationJavaFx;
-
 public class Connexion {
 
 	private String user = "root";
 	private String password = "";
-	private String server = "jdbc:mysql://localhost/gestionmagasin3?autoReconnect=true&useSSL=false";
+	private String server = "jdbc:mysql://localhost/"+Config.dbName+"?autoReconnect=true&useSSL=false";
 	private Connection connexion;
 	
 	public Connexion(){
@@ -19,7 +17,6 @@ public class Connexion {
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
-//			ApplicationJavaFx.msg.setText("errrrrrrr");
 		}
 	}
 

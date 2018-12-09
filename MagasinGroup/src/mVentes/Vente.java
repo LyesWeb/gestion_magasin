@@ -1,8 +1,8 @@
 package mVentes;
 
+import java.util.ArrayList;
 import java.util.Date;
-
-import packfx.Client;
+import mClient.Client;
 
 
 public class Vente {
@@ -11,7 +11,7 @@ public class Vente {
 	private Date datev;
 	private double totalv;
 	private Client clientv;
-
+	ArrayList<LC> lignesCommande = new ArrayList<>();
 	public Vente() {
 		super();
 	}
@@ -61,6 +61,13 @@ public class Vente {
 	}
 	public void setClientv(Client clientv) {
 		this.clientv = clientv;
+	}
+	
+	public ArrayList<LC> getLignesCommande() {
+		return lignesCommande;
+	}
+	public void addLC(LC lc) {
+		this.getLignesCommande().add(lc);
 	}
 	
 }

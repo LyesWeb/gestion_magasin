@@ -1,4 +1,4 @@
-package packfx;
+package mProgramme;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +14,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TableColumn;
@@ -25,10 +24,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -41,6 +36,14 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import mCategories.CategorieJavaFxVue;
+import mClient.FrmAddClient;
+import mDonnees.Config;
+import mProduit.FrmAjouterProduit;
+import mProduit.FrmModifierProduit;
+import mProduit.Produit;
+import mProduit.ProduitDao;
+import mProduit.ProduitDaoImpl;
+import mTools.Tools;
 import mVentes.VenteAdd;
 import mVentes.VenteJavaFxVue;
 
@@ -128,9 +131,10 @@ public class ApplicationJavaFx extends Application{
 	public void start(Stage window) throws Exception {
 //		System.out.println(ProduitDaoImpl.getCount());
 		try {
-			window.setWidth(1200);
-			window.setHeight(700);
-			window.setTitle("Gestion des produits");
+//			window.setWidth(1200);
+//			window.setHeight(700);
+			window.setMaximized(true);
+			window.setTitle(Config.appName);
 			BorderPane brd = new BorderPane();
 			brd.setTop(createContentTop());
 			brd.setLeft(createContentLeft());
@@ -299,25 +303,67 @@ public class ApplicationJavaFx extends Application{
 		pt.getChildren().add(titre);
 		Hyperlink link1=new Hyperlink("Les Ventes");
 		Hyperlink link4=new Hyperlink("Nouveau Produit");
+		
+		VBox sub1 = new VBox();
+		Hyperlink link11=new Hyperlink(" -  Add vente");
+		link11.setId("l11");
+
+		Hyperlink link12=new Hyperlink(" -  Liste des ventes");
+		link12.setId("l11");
+
+		link11.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+            	VenteAdd frmVentadd = new VenteAdd();
+                Stage w = new Stage();
+                try {
+					frmVentadd.start(w);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        });
+		link12.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+            	VenteJavaFxVue frmVenteVue = new VenteJavaFxVue();
+                Stage w = new Stage();
+                try {
+                	frmVenteVue.start(w);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        });
+		
 		link1.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-            	VenteJavaFxVue frmVent = new VenteJavaFxVue();
-                Stage w = new Stage();
-                Stage stage; 
-                try {
-                	if(bVente == true){
-                		if(VenteJavaFxVue.message != null){
-			                stage = (Stage)VenteJavaFxVue.message.getScene().getWindow();
-			                if(!stage.isShowing()){
-			                	frmVent.start(w);}
-			        }}
-                } catch (Exception e) { System.out.println("Erreur !"); }
-                try {
-                	if(bVente == false){
-                		frmVent.start(w); bVente = true;
-                	}
-                } catch (Exception e) { e.printStackTrace(); }
+            	if(sub1.getChildren().size()>0) {
+            		sub1.getChildren().removeAll(link11,link12);
+            	}else {
+            		sub1.getChildren().addAll(link11,link12);
+            	}
+            	
+//            	VenteJavaFxVue frmVent = new VenteJavaFxVue();
+//                Stage w = new Stage();
+//                Stage stage; 
+//                try {
+//                	if(bVente == true){
+//                		if(VenteJavaFxVue.message != null){
+//			                stage = (Stage)VenteJavaFxVue.message.getScene().getWindow();
+//			                if(!stage.isShowing()){
+//			                	frmVent.start(w);}
+//			        }}
+//                } catch (Exception e) { System.out.println("Erreur !"); }
+//                try {
+//                	if(bVente == false){
+//                		frmVent.start(w); bVente = true;
+//                	}
+//                } catch (Exception e) { e.printStackTrace(); }
+            	
             }
         });
 		link4.setOnAction(new EventHandler<ActionEvent>() {
@@ -424,10 +470,11 @@ public class ApplicationJavaFx extends Application{
                 } catch (Exception e) { e.printStackTrace(); }
             }
         });
+		
 		link1.setId("l1");link4.setId("l4");
 		link5.setId("l5");link6.setId("l6");link7.setId("l7");
 		link8.setId("l8");
-		pane.getChildren().addAll(pt,link1,link4,link5,link6,link7,link8);
+		pane.getChildren().addAll(pt,link1,sub1,link4,link5,link6,link7,link8);
 		return pane;
 	}
 
