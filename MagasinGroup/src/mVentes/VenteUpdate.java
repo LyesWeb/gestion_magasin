@@ -3,6 +3,8 @@ package mVentes;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -156,9 +158,6 @@ public class VenteUpdate extends Application{
         new AutoCompleteComboBoxListener<>(product);
         product.valueProperty().addListener(new ChangeListener<String>() {
             @Override public void changed(ObservableValue ov, String t, String t1) {
-//              System.out.println(ov);
-//                System.out.println(t);
-//                System.out.println(t1);
             }    
         });
         productBox.getChildren().addAll(productTxt,product);
@@ -332,13 +331,17 @@ public class VenteUpdate extends Application{
 		update.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-            	if(client.getValue()!=null && date.getValue()!=null && LC.getItems().size()>0) {            		java.sql.Date datev = java.sql.Date.valueOf(date.getValue());
+            	if(client.getValue()!=null && date.getValue()!=null && LC.getItems().size()>0) {
+            		java.sql.Date datev = java.sql.Date.valueOf(date.getValue());
                 	newVente = new Vente(idVente, datev,dbClient.getOne(client.getValue()));
                 	newVente.setTotalv(0);
+                	ArrayList<Integer> ids = new ArrayList<>();
                 	for(LC lc:LC.getItems()) {
                 		newVente.addLC(lc);
+                		int idlc = (int) lc.getCodelc();
+                		ids.add(idlc);
                 	}
-                	lcdb.updateOrInsert(newVente);
+                	lcdb.updateOrInsert(newVente,ids);
                 	try {
                 		Stage stage = (Stage) cancel.getScene().getWindow();
                 	    stage.close();

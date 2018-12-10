@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import com.mysql.jdbc.Statement;
+
 import mCategories.Categorie;
 import mDonnees.AbstractDao;
 import mProduit.Produit;
@@ -166,14 +169,16 @@ public class LCDaoImpl implements LCDao{
 			return null;
 		}
 	}
-	public void updateOrInsert(Vente v) {
+	public void updateOrInsert(Vente v,ArrayList<Integer> ids) {
 		try {
 			ArrayList<LC> lcs = v.getLignesCommande();
 			Connection conn = AbstractDao.getCon().getConnexion();
+			String deleteQ = "DELETE FROM lc WHERE codevente="+v.getCodev()+" and codelc NOT IN (";
+			int i=0;
 			for(LC lc:lcs) {
 				PreparedStatement ps = conn.prepareStatement("INSERT INTO lc(codelc,qt,soustotal,codeprd,codevente) \r\n" + 
 						"VALUES (?,?,?,?,?) \r\n" + 
-						"ON DUPLICATE KEY UPDATE qt = ?;");
+						"ON DUPLICATE KEY UPDATE qt = ?;",Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, lc.getCodelc());
 				ps.setLong(2, lc.getQt());
 				ps.setDouble(3, lc.getProduitlc().getPrixVente());
@@ -181,11 +186,23 @@ public class LCDaoImpl implements LCDao{
 				ps.setLong(5, lc.getCodevente());
 				ps.setLong(6, lc.getQt());
 				ps.executeUpdate();
+				ResultSet rss = ps.getGeneratedKeys();
+                if(rss.next()){
+                    if(i==lcs.size()-1) {
+                    	deleteQ += ""+rss.getInt(1)+")";
+                    }else {
+                    	deleteQ += ""+rss.getInt(1)+",";
+                    }
+                }
 //				System.out.println("INSERT INTO lc(codelc,qt,soustotal,codeprd,codevente) \r\n" + 
 //						"VALUES ("+lc.getCodelc()+","+lc.getQt()+","+lc.getProduitlc().getPrixVente()+","+lc.getProduitlc().getCode()+","+lc.getCodevente()+") \r\n" + 
 //						"ON DUPLICATE KEY UPDATE qt = "+lc.getQt()+";");
 				ps.close();
+				i++;
 			}
+			PreparedStatement ps2 = conn.prepareStatement(deleteQ);
+			ps2.executeUpdate();
+//			System.out.println(deleteQ);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
