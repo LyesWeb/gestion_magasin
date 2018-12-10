@@ -60,7 +60,9 @@ public class VenteUpdate extends Application{
 	HBox messageBox = new HBox();
 	TextField qte = new TextField();
 	ComboBox<String> product = new ComboBox<>();
-
+	int lastIdLc = lcdb.getLastID();
+	
+	
 	@Override
 	public void start(Stage window) throws Exception {
 		window.setWidth(1000);
@@ -199,13 +201,15 @@ public class VenteUpdate extends Application{
                 	}
             		if(!isExist) {
             			Produit p1 = db.getOne(product.getValue());
-                    	LC lc = new LC(LC.getItems().size()+1, Integer.parseInt(qte.getText()), p1.getPrixVente(), p1, idVente);
+                    	LC lc = new LC(lastIdLc, Integer.parseInt(qte.getText()), p1.getPrixVente(), p1, idVente);
                 		addLCinTable(lc);
+                		lastIdLc++;
             		}
             	}else {
                 	Produit p2 = db.getOne(product.getValue());
-                	LC lc2 = new LC(LC.getItems().size()+1, Integer.parseInt(qte.getText()), p2.getPrixVente(), p2, idVente);
+                	LC lc2 = new LC(lastIdLc, Integer.parseInt(qte.getText()), p2.getPrixVente(), p2, idVente);
                 	addLCinTable(lc2);
+                	lastIdLc++;
             	}
             }
         });
@@ -331,7 +335,7 @@ public class VenteUpdate extends Application{
 		update.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-            	if(client.getValue()!=null && date.getValue()!=null && LC.getItems().size()>0) {
+//            	if(client.getValue()!=null && date.getValue()!=null && LC.getItems().size()>0) {
             		java.sql.Date datev = java.sql.Date.valueOf(date.getValue());
                 	newVente = new Vente(idVente, datev,dbClient.getOne(client.getValue()));
                 	newVente.setTotalv(0);
@@ -346,10 +350,11 @@ public class VenteUpdate extends Application{
                 		Stage stage = (Stage) cancel.getScene().getWindow();
                 	    stage.close();
     				} catch (Exception e) {
+    					System.out.println(e);
     				}
-            	}else {
-            		messageText.setText("Entrer tout les informations");
-            	}
+//            	}else {
+//            		messageText.setText("Entrer tout les informations");
+//            	}
             }
         });
 		cancel.setOnAction(new EventHandler<ActionEvent>() {

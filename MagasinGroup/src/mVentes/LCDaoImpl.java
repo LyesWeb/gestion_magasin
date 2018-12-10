@@ -11,6 +11,7 @@ import com.mysql.jdbc.Statement;
 
 import mCategories.Categorie;
 import mDonnees.AbstractDao;
+import mDonnees.Config;
 import mProduit.Produit;
 
 
@@ -174,6 +175,7 @@ public class LCDaoImpl implements LCDao{
 			ArrayList<LC> lcs = v.getLignesCommande();
 			Connection conn = AbstractDao.getCon().getConnexion();
 			String deleteQ = "DELETE FROM lc WHERE codevente="+v.getCodev()+" and codelc NOT IN (";
+			if(lcs.size()==0) deleteQ += "'')";
 			int i=0;
 			for(LC lc:lcs) {
 				PreparedStatement ps = conn.prepareStatement("INSERT INTO lc(codelc,qt,soustotal,codeprd,codevente) \r\n" + 
@@ -187,12 +189,18 @@ public class LCDaoImpl implements LCDao{
 				ps.setLong(6, lc.getQt());
 				ps.executeUpdate();
 				ResultSet rss = ps.getGeneratedKeys();
-                if(rss.next()){
+                if(rss.next() && lcs.size()!=0){
                     if(i==lcs.size()-1) {
                     	deleteQ += ""+rss.getInt(1)+")";
                     }else {
                     	deleteQ += ""+rss.getInt(1)+",";
                     }
+                }else {
+                	if(i==lcs.size()-1) {                		
+                		deleteQ += lc.getCodelc()+")";
+                	}else {
+                		deleteQ += lc.getCodelc()+",";
+                	}
                 }
 //				System.out.println("INSERT INTO lc(codelc,qt,soustotal,codeprd,codevente) \r\n" + 
 //						"VALUES ("+lc.getCodelc()+","+lc.getQt()+","+lc.getProduitlc().getPrixVente()+","+lc.getProduitlc().getCode()+","+lc.getCodevente()+") \r\n" + 
@@ -205,6 +213,19 @@ public class LCDaoImpl implements LCDao{
 //			System.out.println(deleteQ);
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public int getLastID() {
+		Connection conn = AbstractDao.getCon().getConnexion();
+		String req = "SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '"+Config.dbName+"' AND TABLE_NAME = 'lc'";
+		try {
+			PreparedStatement ps = conn.prepareStatement(req);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			return rs.getInt(1);
+		} catch (SQLException e) {
+			return 0;
 		}
 	}
 }
