@@ -106,6 +106,16 @@ public class ApplicationJavaFx extends Application{
 	
 	public static void deletePrd(long code){
 		pdao.delete(code);
+		// delete image
+		try {
+			File f = new File("photosStock/"+produitSelected.getCode()+".jpg");
+	        if(f.delete()){
+	            System.out.println("yess");
+	        }else System.out.println("nooo");
+		}catch (Exception e){
+	         e.printStackTrace();
+		}
+		// end delete image
 		produits.clear();
 		produitSelected = null;
 		getProduits();
@@ -319,7 +329,6 @@ public class ApplicationJavaFx extends Application{
                 try {
 					frmVentadd.start(w);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
             }
@@ -332,7 +341,6 @@ public class ApplicationJavaFx extends Application{
                 try {
                 	frmVenteVue.start(w);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
             }
@@ -345,25 +353,7 @@ public class ApplicationJavaFx extends Application{
             		sub1.getChildren().removeAll(link11,link12);
             	}else {
             		sub1.getChildren().addAll(link11,link12);
-            	}
-            	
-//            	VenteJavaFxVue frmVent = new VenteJavaFxVue();
-//                Stage w = new Stage();
-//                Stage stage; 
-//                try {
-//                	if(bVente == true){
-//                		if(VenteJavaFxVue.message != null){
-//			                stage = (Stage)VenteJavaFxVue.message.getScene().getWindow();
-//			                if(!stage.isShowing()){
-//			                	frmVent.start(w);}
-//			        }}
-//                } catch (Exception e) { System.out.println("Erreur !"); }
-//                try {
-//                	if(bVente == false){
-//                		frmVent.start(w); bVente = true;
-//                	}
-//                } catch (Exception e) { e.printStackTrace(); }
-            	
+            	}            	
             }
         });
 		link4.setOnAction(new EventHandler<ActionEvent>() {
