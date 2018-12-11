@@ -22,7 +22,7 @@
 .hyperlink:focus{
     -fx-border-color: transparent;
 }
-#rightPane, #topPane, #bottomPane ,#headTitle, #CenterPane, #clientCenter, #VenteAddCenter, #AddLCVenteCenter, #deleteLCCenter, #CatCenter, #updateVCenter, #updateCenter{
+#panePadding, #rightPane, #topPane, #bottomPane ,#headTitle, #CenterPane, #clientCenter, #VenteAddCenter, #AddLCVenteCenter, #deleteLCCenter, #CatCenter, #updateVCenter, #updateCenter{
 	-fx-padding:10;
 }
 #leftPane{
@@ -103,7 +103,6 @@
     -fx-min-width: 200;
     -fx-underline: false;
     -fx-background-color: #7b9091;
-    
     -fx-border-color: #2c3e50;
 	-fx-border-insets: 0;
 	-fx-border-width: 0 0 0 3;
@@ -116,4 +115,24 @@
 }
 #cc{
 	-fx-background-color: #718687;
+}
+#produitLabelle{
+	-fx-fill: #222;
+	-fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+#codeProduitContent{
+	-fx-fill: #fff;
+	-fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+#produitInfos {
+	-fx-fill: #333;
+	-fx-font-size: 13px;
+    -fx-font-weight: normal;
+}
+#codeBoxProduct{
+	-fx-background-color: #3498db;
+	-fx-padding: 5;
+	-fx-background-radius: 99;
 }

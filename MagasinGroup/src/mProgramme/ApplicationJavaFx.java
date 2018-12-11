@@ -1,5 +1,6 @@
 package mProgramme;
 
+import java.awt.Button;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,6 +17,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -108,7 +110,7 @@ public class ApplicationJavaFx extends Application{
 		pdao.delete(code);
 		// delete image
 		try {
-			File f = new File("photosStock/"+produitSelected.getCode()+".jpg");
+			File f = new File("photosStock/thumbnail/"+produitSelected.getCode()+".jpg");
 	        if(f.delete()){
 	            System.out.println("yess");
 	        }else System.out.println("nooo");
@@ -169,7 +171,6 @@ public class ApplicationJavaFx extends Application{
 		    JFrame frame = new JFrame("Erreur");
 		    JOptionPane.showMessageDialog(frame, "Probleme de connexion !", "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
 		}
-		
 	}
 	
 	private static void displayContentPrdDeleted() {
@@ -178,72 +179,73 @@ public class ApplicationJavaFx extends Application{
 		contentCategorie.setText("");
 		contentPrixAchat.setText("");
 		contentPrixVente.setText("");
-		//paneCenter.setVisible(false);
-		
+		//paneCenter.setVisible(false);		
 		//paneCenter.getChildren().remove(imgview);
-		
 		paneCenter.getChildren().remove(imgview);
 	}
 
 	private static void displayContentProduit() {
+		contentCode.setId("codeProduitContent");
+		contentDesignation.setId("produitInfos");
+		contentCategorie.setId("produitInfos");
+		contentPrixAchat.setId("produitInfos");
+		contentPrixVente.setId("produitInfos");
+		
 		contentCode.setText(produitSelected.getCode()+"");
 		contentDesignation.setText(produitSelected.getDesignation());
-		contentDesignation.setWrappingWidth(200);
+		contentDesignation.setWrappingWidth(500);
 		contentCategorie.setText(produitSelected.getCat().getIntitule().toString());
-		contentPrixAchat.setText(produitSelected.getPrixAchat()+"");
-		contentPrixVente.setText(produitSelected.getPrixVente()+"");
+		contentPrixAchat.setText(produitSelected.getPrixAchat()+" DH");
+		contentPrixVente.setText(produitSelected.getPrixVente()+" DH");
 		imgview = null;
 		try {
-			imgview = Tools.createImageView("photosStock/" + produitSelected.getCode() + ".jpg");
-//			imgview = Tools.createImageView("photosStock/1.jpg");
+			imgview = Tools.createImageView("photosStock/thumbnail/" + produitSelected.getCode() + ".jpg");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		imgview.setFitWidth(300);
 		imgview.setFitHeight(300);
 		//paneCenter.add(imgview, 1, 6, 2, 1);
-		paneCenter.add(imgview, 1, 6);
+		paneCenter.add(imgview, 2, 6);
 	}
 
 	private  Pane createContentRight(){
 		Pane pane=new VBox();
-
 		((VBox)pane).setSpacing(5);
-		
 		getProduits();
-		
 		TableColumn<Produit, Long> codeCol=new TableColumn<>("code");
 		codeCol.setCellValueFactory(new PropertyValueFactory<>("code"));
-		
 		TableColumn<Produit, String> designationCol=new TableColumn<>("Désignation");
 		designationCol.setCellValueFactory(new  PropertyValueFactory<>("designation"));
-
 		TableColumn<Produit, Double> prixAchatCol=new TableColumn<>("Prix Achat");
 		prixAchatCol.setCellValueFactory(new  PropertyValueFactory<>("prixAchat"));
-		
 		TableColumn<Produit, Double> prixVenteCol=new TableColumn<>("Prix vente");
 		prixVenteCol.setCellValueFactory(new  PropertyValueFactory<>("prixVente"));
-		
+		table.setMinHeight(500);
 		table.getColumns().addAll(codeCol, designationCol, prixAchatCol, prixVenteCol);
-		
 		table.setItems(produits);
-		
 		table.setRowFactory(obj->{
 			TableRow<Produit> row = new TableRow<>();
 			row.setOnMouseClicked(event->{
 			if (event.getClickCount() == 1 && (!row.isEmpty())) {
 				produitSelected = row.getItem();
 //				hc.getChildren().remove(welcome);
-				hc.getChildren().set(0, paneCenter);
+			    ScrollPane scrollPane = new ScrollPane(paneCenter);
+			    VBox centerVBOX = new VBox();
+			    HBox centerFooter = new HBox();
+			    centerFooter.setId("panePadding");
+			    Hyperlink btnSup = new Hyperlink("suprimer");
+			    centerFooter.getChildren().add(btnSup);
+			    centerVBOX.getChildren().addAll(scrollPane,centerFooter);
+				hc.getChildren().set(0, centerVBOX);
 				displayContentProduit();
 				msg.setText("");
 			}
 			});
 			return row;
 		});
-
 		pane.setId("rightPane");
-		pane.setPrefWidth(300);
+		pane.setPrefWidth(350);
 		Text titre = new Text("Liste des produits");
 		titre.setFont(Font.font("Calibri", FontWeight.BOLD, 18));
 		titre.setFill(Color.BLACK);
@@ -476,22 +478,31 @@ public class ApplicationJavaFx extends Application{
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		};
-		welcome.setPrefHeight(500);
+		welcome.setPrefHeight(560);
 		welcome.setAlignment(Pos.CENTER);
 		welcome.getChildren().add(welcomeImg);
 		
-		Text labelCode=new Text("Code:");
-		Text labelDesignation=new Text("Désignation:");
-		Text labelCategorie=new Text("Catégorie:");
-		Text labelPrixAchat=new Text("Prix achat:");
-		Text labelPrixVente=new Text("Prix Vente:");
+		HBox labelCode = Tools.labelleProduit("Code");
+		HBox labelDesignation = Tools.labelleProduit("Désignation");
+		HBox labelCategorie = Tools.labelleProduit("Catégorie");
+		HBox labelPrixAchat = Tools.labelleProduit("Prix achat");
+		HBox labelPrixVente = Tools.labelleProduit("Prix Vente");
+		HBox labelVignette = Tools.labelleProduit("Vignette");
 		msg.setId("msg");
 		paneCenter.add(labelCode, 1, 1);
 		paneCenter.add(labelDesignation, 1, 2);
 		paneCenter.add(labelCategorie, 1, 3);
 		paneCenter.add(labelPrixAchat, 1, 4);
 		paneCenter.add(labelPrixVente, 1, 5);
-		paneCenter.add(contentCode, 2, 1);
+		paneCenter.add(labelVignette, 1, 6);
+		
+		HBox codeBox = new HBox();
+		codeBox.setId("codeBoxProduct");
+		codeBox.setMaxWidth(35);
+		codeBox.setMinHeight(35);
+		codeBox.setAlignment(Pos.CENTER);
+		codeBox.getChildren().add(contentCode);
+		paneCenter.add(codeBox, 2, 1);
 		paneCenter.add(contentDesignation, 2, 2);
 		paneCenter.add(contentCategorie, 2, 3);
 		paneCenter.add(contentPrixAchat, 2, 4);
