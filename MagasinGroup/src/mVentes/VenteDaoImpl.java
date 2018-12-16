@@ -76,6 +76,7 @@ public class VenteDaoImpl implements VenteDao {
 				v.setCodev(Long.parseLong(rs.getString(1)));
 				v.setDatev(rs.getDate(2));
 				v.setTotalv(rs.getDouble(3));
+				v.setStat(rs.getInt("stat"));
 				v.setClientv(new Client(rs.getLong("id"), rs.getString("nom"), rs.getString("prenom"), rs.getString("tele"), rs.getString("email"), rs.getString("adresse")));
 				lesVentes.add(v);
 			}
@@ -102,6 +103,7 @@ public class VenteDaoImpl implements VenteDao {
 				v.setCodev(Long.parseLong(rs.getString(1)));
 				v.setDatev(rs.getDate(2));
 				v.setTotalv(rs.getDouble(3));
+				v.setStat(rs.getInt("stat"));
 				v.setClientv(new Client(rs.getLong("id"), rs.getString("nom"), rs.getString("prenom"), rs.getString("tele"), rs.getString("email"), rs.getString("adresse")));
 			}
 			conn.close();

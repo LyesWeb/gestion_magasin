@@ -1,14 +1,11 @@
 package mProgramme;
 
-import java.awt.Button;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Collection;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,6 +23,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -37,11 +35,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import mCategories.Categorie;
+import mCategories.CategorieJavaFxForPrd;
 import mCategories.CategorieJavaFxVue;
 import mClient.FrmAddClient;
 import mDonnees.Config;
 import mProduit.FrmAjouterProduit;
-import mProduit.FrmModifierProduit;
 import mProduit.Produit;
 import mProduit.ProduitDao;
 import mProduit.ProduitDaoImpl;
@@ -66,6 +65,7 @@ public class ApplicationJavaFx extends Application{
 	public static Text contentPrixAchat = new Text();
 	public static Text contentPrixVente = new Text();
 	public static GridPane paneCenter = new GridPane();
+	public static ScrollPane scrollPane = new ScrollPane(paneCenter);
 	public static ImageView imgview;
 	public HBox welcome = new HBox();
 	public static ImageView welcomeImg;
@@ -73,8 +73,19 @@ public class ApplicationJavaFx extends Application{
 	public static TableView<Produit> table = new TableView<>();
 	public static Text msg=new Text("");
 	public static ObservableList<Produit> produits = FXCollections.observableArrayList();
-
-	VBox hc = new VBox();
+	public static Hyperlink btnSup = new Hyperlink("Suprimer");
+	public static Hyperlink btnUp = new Hyperlink("Modifier");
+    Boolean isEdit = false;
+    public static HBox centerFooter = new HBox();
+    public static TextField designationUpdate = new TextField();
+    public static TextField prixAchatUpdate = new TextField();
+    public static TextField prixVenteUpdate = new TextField();
+    public static BorderPane brd = new BorderPane();
+    public static VBox hc = new VBox();
+	public static VBox centerVBOX = new VBox();
+	HBox cateditHbox = new HBox();
+	public static Boolean isFirst = true;
+	ImageView imageEditCat = new ImageView();
 	EventHandler<KeyEvent> eventText=new EventHandler<KeyEvent>() {
 		@Override
 		public void handle(KeyEvent event) {
@@ -141,25 +152,18 @@ public class ApplicationJavaFx extends Application{
 	
 	@Override
 	public void start(Stage window) throws Exception {
-//		System.out.println(ProduitDaoImpl.getCount());
 		try {
 //			window.setWidth(1200);
 //			window.setHeight(700);
 			window.setMaximized(true);
 			window.setTitle(Config.appName);
-			BorderPane brd = new BorderPane();
+			
 			brd.setTop(createContentTop());
 			brd.setLeft(createContentLeft());
 			brd.setBottom(createContentBottom());
 			brd.setRight(createContentRight());
 			createContentCenter();
 			paneCenter.setMinHeight(490);
-			HBox hm = new HBox();
-			hm.setId("msgBox");
-			hm.getChildren().add(msg);
-			hm.setAlignment(Pos.BOTTOM_LEFT);
-			hc.getChildren().addAll(welcome, hm);
-			brd.setCenter(hc);
 			Scene scene = new Scene(brd, 200, 300, Color.WHITE);
 			File f = new File("css/style.css");
 			scene.getStylesheets().clear();
@@ -207,6 +211,15 @@ public class ApplicationJavaFx extends Application{
 		imgview.setFitHeight(300);
 		//paneCenter.add(imgview, 1, 6, 2, 1);
 		paneCenter.add(imgview, 2, 6);
+		designationUpdate.setText(produitSelected.getDesignation());
+		prixAchatUpdate.setText(Double.toString(produitSelected.getPrixAchat()));
+		prixVenteUpdate.setText(Double.toString(produitSelected.getPrixVente()));
+		
+		if(!isFirst) {
+			hc.getChildren().clear();
+			hc.getChildren().add(centerVBOX);
+		}
+		
 	}
 
 	private  Pane createContentRight(){
@@ -228,16 +241,8 @@ public class ApplicationJavaFx extends Application{
 			TableRow<Produit> row = new TableRow<>();
 			row.setOnMouseClicked(event->{
 			if (event.getClickCount() == 1 && (!row.isEmpty())) {
+				isFirst = false;
 				produitSelected = row.getItem();
-//				hc.getChildren().remove(welcome);
-			    ScrollPane scrollPane = new ScrollPane(paneCenter);
-			    VBox centerVBOX = new VBox();
-			    HBox centerFooter = new HBox();
-			    centerFooter.setId("panePadding");
-			    Hyperlink btnSup = new Hyperlink("suprimer");
-			    centerFooter.getChildren().add(btnSup);
-			    centerVBOX.getChildren().addAll(scrollPane,centerFooter);
-				hc.getChildren().set(0, centerVBOX);
 				displayContentProduit();
 				msg.setText("");
 			}
@@ -380,12 +385,12 @@ public class ApplicationJavaFx extends Application{
             }
         });
 		
-		Hyperlink link5=new Hyperlink("Modifier");
-		link5.setOnAction(new EventHandler<ActionEvent>() {
+		btnUp.setId("btn");
+		btnUp.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
             	if(produitSelected != null){
-            		FrmModifierProduit frmMPrd = new FrmModifierProduit();
+            		/*FrmModifierProduit frmMPrd = new FrmModifierProduit();
 	                Stage w = new Stage();
 	                Stage stage; 
 	                try {
@@ -400,15 +405,42 @@ public class ApplicationJavaFx extends Application{
 	                	if(bUpdate == false){
 	                		frmMPrd.start(w); bUpdate = true;
 	                	}
-	                } catch (Exception e) { e.printStackTrace(); }
+	                } catch (Exception e) { e.printStackTrace(); }*/
+            		isEdit = !isEdit;
+            		if(isEdit) {
+            			btnUp.setText("Mise a jour");
+            			paneCenter.getChildren().remove(contentDesignation);
+                		paneCenter.getChildren().remove(contentPrixAchat);
+                		paneCenter.getChildren().remove(contentPrixVente);
+                		paneCenter.getChildren().remove(contentCategorie);
+                		paneCenter.add(designationUpdate, 2, 2);
+                		try {
+							cateditHbox.getChildren().addAll(contentCategorie, imageEditCat);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+                		paneCenter.add(cateditHbox, 2, 3);
+                		paneCenter.add(prixAchatUpdate, 2, 4);
+                		paneCenter.add(prixVenteUpdate, 2, 5);
+            		}else {
+            			updateProduit();
+            			btnUp.setText("Modifier");
+            			paneCenter.getChildren().remove(designationUpdate);
+                		paneCenter.getChildren().remove(prixAchatUpdate);
+                		paneCenter.getChildren().remove(prixVenteUpdate);
+                		paneCenter.getChildren().remove(cateditHbox);
+                		paneCenter.add(contentDesignation, 2, 2);
+                		paneCenter.add(contentCategorie, 2, 3);
+                		paneCenter.add(contentPrixAchat, 2, 4);
+                		paneCenter.add(contentPrixVente, 2, 5);
+            		}
             	}else{
                 	msg.setText("Veuillez selectionner un produit.");
             	}
             }
         });
-		
-		Hyperlink link6=new Hyperlink("Suprimer");
-		link6.setOnAction(new EventHandler<ActionEvent>() {
+		btnSup.setId("btn");
+		btnSup.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
                 if(produitSelected != null){
@@ -440,7 +472,7 @@ public class ApplicationJavaFx extends Application{
                 } catch (Exception e) { e.printStackTrace(); }
             }
         });
-		Hyperlink link8=new Hyperlink("Categories");
+		Hyperlink link8=new Hyperlink("Les categories");
 		link8.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
@@ -464,23 +496,35 @@ public class ApplicationJavaFx extends Application{
         });
 		
 		link1.setId("l1");link4.setId("l4");
-		link5.setId("l5");link6.setId("l6");link7.setId("l7");
+		link7.setId("l7");
 		link8.setId("l8");
-		pane.getChildren().addAll(pt,link1,sub1,link4,link5,link6,link7,link8);
+		pane.getChildren().addAll(pt,link1,sub1,link4,link7,link8);
 		return pane;
 	}
 
 	private void createContentCenter(){
+		((HBox)cateditHbox).setSpacing(12);
 		try {
-			welcomeImg = Tools.createImageView("photosStock/welcome.png");
-			welcomeImg.setFitHeight(250);
-			welcomeImg.setFitWidth(550);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		};
-		welcome.setPrefHeight(560);
-		welcome.setAlignment(Pos.CENTER);
-		welcome.getChildren().add(welcomeImg);
+			imageEditCat = Tools.createImageView("photosStock/edit.png");
+			imageEditCat.setFitHeight(16);
+			imageEditCat.setFitWidth(16);
+			imageEditCat.setId("imageEditCat");
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		imageEditCat.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+		     @Override
+		     public void handle(MouseEvent event) {
+		    	 CategorieJavaFxForPrd frmCAT = new CategorieJavaFxForPrd();
+	                Stage w = new Stage();
+	                try {
+	                	frmCAT.start(w); 
+	                } catch (Exception e) {
+//	                	message.setFill(Color.RED);
+//	                	message.setText("Erreur !"); 
+                	}
+		     }
+		});
 		
 		HBox labelCode = Tools.labelleProduit("Code");
 		HBox labelDesignation = Tools.labelleProduit("Désignation");
@@ -512,8 +556,55 @@ public class ApplicationJavaFx extends Application{
 		paneCenter.setVgap(20);
 		paneCenter.setHgap(20);
 		paneCenter.setPrefWidth(200);
+		
+	    centerFooter.setId("panePadding");
+	    ((HBox)centerFooter).setSpacing(12);
+	    centerFooter.getChildren().addAll(btnSup, btnUp);
+	    centerVBOX.getChildren().addAll(scrollPane,centerFooter);
+		
+		try {
+			welcomeImg = Tools.createImageView("photosStock/welcome.png");
+			welcomeImg.setFitHeight(250);
+			welcomeImg.setFitWidth(550);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		};
+		welcome.setPrefHeight(560);
+		welcome.setAlignment(Pos.CENTER);
+		welcome.getChildren().add(welcomeImg);
+		HBox hm = new HBox();
+		hm.setId("msgBox");
+		hm.getChildren().add(msg);
+		hm.setAlignment(Pos.BOTTOM_LEFT);
+		hc.getChildren().addAll(welcome, hm);
+		brd.setCenter(hc);
 	}
-
+	public void updateProduit() {
+		try {
+    		long code = produitSelected.getCode();
+        	String designation = designationUpdate.getText();
+        	double prixAchat = Double.parseDouble(prixAchatUpdate.getText());
+        	double prixVente = Double.parseDouble(prixVenteUpdate.getText());
+        	Categorie objCat;
+        	if(CategorieJavaFxForPrd.categorieSelected != null){
+        		objCat = CategorieJavaFxForPrd.categorieSelected;
+        	}else{
+        		objCat = new Categorie(produitSelected.getCat().getCodecat(), produitSelected.getCat().getIntitule());
+        	}
+        	Produit np = new Produit(code, designation, prixAchat, prixVente, objCat);
+            produitSelected.setCode(code);
+            produitSelected.setDesignation(designation);
+            produitSelected.setPrixAchat(prixAchat);
+            produitSelected.setPrixVente(prixVente);
+            produitSelected.setCat(objCat);
+            updatePrd(np);
+//            message.setFill(Color.LIMEGREEN);
+//			message.setText("Produit modifier avec succes.");
+		} catch (Exception e) {
+//			message.setFill(Color.RED);
+//			message.setText("Erreur !");
+		}
+	}
 	public static void main(String[] args) {
 		Application.launch(args);
 	}

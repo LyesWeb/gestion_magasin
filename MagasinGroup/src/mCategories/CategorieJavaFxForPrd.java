@@ -24,7 +24,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import mProduit.FrmAjouterProduit;
-import mProduit.FrmModifierProduit;
+import mProgramme.ApplicationJavaFx;
 
 public class CategorieJavaFxForPrd extends Application{
 
@@ -108,7 +108,7 @@ public class CategorieJavaFxForPrd extends Application{
 					if (event.getClickCount() == 2 && (!row.isEmpty())) {
 						categorieSelected = row.getItem();
 						FrmAjouterProduit.txtCategorie.setText(categorieSelected.getIntitule()+"");
-						FrmModifierProduit.txtCategorie.setText(categorieSelected.getIntitule()+"");
+						ApplicationJavaFx.contentCategorie.setText(categorieSelected.getIntitule()+"");
 						messageSelect.setFill(Color.ORANGE);
 						messageSelect.setText("Categorie bien selectionne.");
 						Stage stage = (Stage)table.getScene().getWindow();

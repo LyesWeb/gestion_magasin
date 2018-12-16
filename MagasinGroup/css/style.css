@@ -2,7 +2,7 @@
 	-fx-font-family: "open sans";
 	-fx-background-color: #f8f8f8;
 }
-.button {
+.button, #btn {
 	-fx-background-color: #c8d6e5;
     -fx-background-insets: 0,1,2;
     -fx-background-radius: 3,2,1;
@@ -11,10 +11,12 @@
     -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-cursor: hand;
+    -fx-border-color: transparent;
 }
 
-.button:hover {
+.button:hover, #btn:hover {
 	-fx-background-color: #8395a7;
+	-fx-border-color: transparent;
 }
 .hyperlink {
     -fx-border-color: transparent;
@@ -135,4 +137,11 @@
 	-fx-background-color: #3498db;
 	-fx-padding: 5;
 	-fx-background-radius: 99;
+}
+#imageEditCat{
+	-fx-cursor: hand;
+}
+#regLabel{
+	-fx-fill: #222;
+	-fx-font-size: 13px;
 }

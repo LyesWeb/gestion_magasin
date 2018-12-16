@@ -181,6 +181,20 @@ public class VenteJavaFxVue extends Application{
 							}
                         });
                     }
+                    private final Button btn4 = new Button("");
+                    {
+                        btn4.setOnAction((ActionEvent event) -> {
+                        	Vente Vente = getTableView().getItems().get(getIndex());
+                            codeVenteSelected=Vente;
+                            FrmReglementJavaFx frmReg = new FrmReglementJavaFx();
+                        	Stage w = new Stage();
+                        	try {
+                        		frmReg.start(w);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+                        });
+                    }
                     @Override
                     public void updateItem(Void item, boolean empty) {
                         super.updateItem(item, empty);
@@ -215,7 +229,6 @@ public class VenteJavaFxVue extends Application{
                         	try {
 								imgview3=Tools.createImageView("photosStock/edit.png");
 							} catch (FileNotFoundException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
                         	imgview3.setFitHeight(15);
@@ -223,7 +236,18 @@ public class VenteJavaFxVue extends Application{
                         	btn3.setGraphic(imgview3);
                         	btn3.setPrefHeight(10);
                         	//////////
-                        	HBox pane = new HBox(btn2, btn1, btn3);
+                        	ImageView imgview4 = new ImageView();
+                        	try {
+								imgview4=Tools.createImageView("photosStock/reg.png");
+							} catch (FileNotFoundException e) {
+								e.printStackTrace();
+							}
+                        	imgview4.setFitHeight(13);
+                        	imgview4.setFitWidth(9);
+                        	btn4.setGraphic(imgview4);
+                        	btn4.setPrefHeight(10);
+                        	//////////
+                        	HBox pane = new HBox(btn2, btn1, btn3, btn4);
                         	setGraphic(pane);
                         }
                     }
@@ -248,9 +272,11 @@ public class VenteJavaFxVue extends Application{
 		totalvCol.setCellValueFactory(new  PropertyValueFactory<>("totalv"));
 		TableColumn<Vente, String> clientCol = new TableColumn<>("Client");
 		clientCol.setCellValueFactory(new  PropertyValueFactory<>("clientv"));
+		TableColumn<Vente, String> statCol = new TableColumn<>("stat");
+		statCol.setCellValueFactory(new  PropertyValueFactory<>("stat"));
 		
-		table.getColumns().addAll(codevCol, datevCol, totalvCol, clientCol);
-		clientCol.setPrefWidth(600);
+		table.getColumns().addAll(codevCol, datevCol, totalvCol, clientCol, statCol);
+		clientCol.setPrefWidth(200);
 		codevCol.setPrefWidth(30);
 		table.setItems(ventes);
 		addButtonToTable();

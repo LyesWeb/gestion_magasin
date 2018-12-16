@@ -210,6 +210,13 @@ public class LCDaoImpl implements LCDao{
 			}
 			PreparedStatement ps2 = conn.prepareStatement(deleteQ);
 			ps2.executeUpdate();
+			//update totalv
+			PreparedStatement ps3 = conn.prepareStatement("UPDATE `vente` SET `totalv`=? WHERE `codev`=?");
+			ps3.setDouble(1, v.getTotalv());
+			ps3.setDouble(2, v.getCodev());
+//			VenteDaoImpl vdo = new VenteDaoImpl();
+//			vdo.updateTotalVente(v.getCodev());
+			ps3.executeUpdate();
 //			System.out.println(deleteQ);
 		} catch (SQLException e) {
 			e.printStackTrace();

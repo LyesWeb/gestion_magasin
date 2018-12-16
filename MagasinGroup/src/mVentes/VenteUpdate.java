@@ -338,7 +338,7 @@ public class VenteUpdate extends Application{
 //            	if(client.getValue()!=null && date.getValue()!=null && LC.getItems().size()>0) {
             		java.sql.Date datev = java.sql.Date.valueOf(date.getValue());
                 	newVente = new Vente(idVente, datev,dbClient.getOne(client.getValue()));
-                	newVente.setTotalv(0);
+                	newVente.setTotalv(total);
                 	ArrayList<Integer> ids = new ArrayList<>();
                 	for(LC lc:LC.getItems()) {
                 		newVente.addLC(lc);
@@ -346,6 +346,7 @@ public class VenteUpdate extends Application{
                 		ids.add(idlc);
                 	}
                 	lcdb.updateOrInsert(newVente,ids);
+                	VenteJavaFxVue.charger();
                 	try {
                 		Stage stage = (Stage) cancel.getScene().getWindow();
                 	    stage.close();
