@@ -35,10 +35,11 @@ public class VenteDaoImpl implements VenteDao {
 	public void update(Vente v) {
 		try {
 			Connection conn = AbstractDao.getCon().getConnexion();
-			PreparedStatement ps = conn.prepareStatement("UPDATE vente SET datev=?, idclient=? WHERE codev=?");
+			PreparedStatement ps = conn.prepareStatement("UPDATE vente SET datev=?, idclient=?, stat=? WHERE codev=?");
 			ps.setDate(1, (Date) v.getDatev());
 			ps.setLong(2, v.getClientv().getId());
-			ps.setLong(3, v.getCodev());
+			ps.setLong(3, v.getStat());
+			ps.setLong(4, v.getCodev());
 			ps.executeUpdate();
 			ps.close();
 		} catch (SQLException e) {

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import mCategories.Categorie;
+import mCategories.CategorieDaoImpl;
 import mDonnees.AbstractDao;
 import mDonnees.Config;
 
@@ -149,4 +150,38 @@ public class ProduitDaoImpl extends AbstractDao implements ProduitDao {
 			return null;
 		}
 	}
+	
+	public Collection<Produit> getproduits(long id) {
+		try {
+			Connection conn = AbstractDao.getCon().getConnexion();
+			Collection<Produit> lesProduits = new ArrayList<>();
+		
+			String req = "SELECT  * FROM produit WHERE codecat=?";
+			PreparedStatement ps = conn.prepareStatement(req);
+			ps.setLong(1, id);
+			ResultSet rs = ps.executeQuery();
+			Categorie cat= new Categorie();
+			CategorieDaoImpl cdao= new CategorieDaoImpl();
+			cat=cdao.getOne(id);
+			
+			while(rs.next())
+			{
+				
+				Produit e = new Produit();
+				e.setCode(Long.parseLong(rs.getString(1)));
+				e.setDesignation(rs.getString(2));
+				e.setPrixAchat(Double.parseDouble(rs.getString(3)));
+				e.setPrixVente(Double.parseDouble(rs.getString(4)));
+				
+				e.setCat(cat);
+				lesProduits.add(e);
+			}
+			conn.close();
+			return lesProduits;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	
 }

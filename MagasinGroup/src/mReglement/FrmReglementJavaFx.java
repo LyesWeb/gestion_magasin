@@ -1,6 +1,13 @@
-package mVentes;
+package mReglement;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -25,6 +32,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import mClient.ClientDaoImpl;
 import mProduit.ProduitDaoImpl;
+import mVentes.Vente;
+import mVentes.VenteDaoImpl;
+import mVentes.VenteJavaFxVue;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -43,14 +53,15 @@ public class FrmReglementJavaFx extends Application{
 	Button print = new Button("Imprimer");
 	public static Text message = new Text("");
 	public static TableView traits = new TableView();
-
-
+	public EspeceDaoImpl espDao = new EspeceDaoImpl();
+	public Espece venteRegEsp = espDao.getOne(venteSelected.getCodev());
+	public BorderPane brd = new BorderPane();
 	@Override
 	public void start(Stage window) throws Exception {
 		window.setWidth(1000);
 		window.setHeight(700);
 		window.setTitle("Reglement Vente n: "+idVente);
-		BorderPane brd = new BorderPane();
+		
 		brd.setTop(createContentTopTitle());
 		brd.setCenter(createContentCenter());
 		Scene scene = new Scene(brd, 200, 300, Color.WHITE);
@@ -136,6 +147,35 @@ public class FrmReglementJavaFx extends Application{
 	VBox RegEspece = new VBox();
 	VBox RegTrait = new VBox();
 	private Pane createVenteReg() {
+		venteRegEsp = espDao.getOne(venteSelected.getCodev());
+		if(venteRegEsp != null) {
+			VBox resPane = new VBox();
+			///
+			HBox statueBox = new HBox();
+			Text statueLabel = new Text("Statue : ");
+			Text statue = new Text(" Paye par espece");
+			statueBox.getChildren().addAll(statueLabel, statue);
+			///
+			HBox montantBox = new HBox();
+			Text montantLabel = new Text("Montant : ");
+			Text montant = new Text(" "+venteSelected.getTotalv()+" DH");
+			montantBox.getChildren().addAll(montantLabel, montant);
+			///
+//			HBox dateBox = new HBox();
+//			Text dateLabel = new Text("Date de paiment : ");
+//			String dateString = venteRegEsp.getDateEspece().toString();
+//			SimpleDateFormat sdfr = new SimpleDateFormat("yyyy/MMM/mm");
+//			try{
+//				dateString = venteRegEsp.getDateEspece().toString();
+//			   }catch (Exception ex ){
+//				System.out.println(ex);
+//			   }
+//			Text dt = new Text();
+//			dateBox.getChildren().addAll(dateLabel, dt);
+			///
+			resPane.getChildren().addAll(statueBox, montantBox);
+			return resPane;
+		}else {
 		VBox paneReg = new VBox();
 		paneReg.setStyle("-fx-padding: 0 15 0 15");
 		HBox choixBox = new HBox();
@@ -165,6 +205,7 @@ public class FrmReglementJavaFx extends Application{
 		paneReg.getChildren().addAll(choixBox);
 		
 		return paneReg;
+		}
 	}
 	private void RegEspece() {
 		////
@@ -179,6 +220,16 @@ public class FrmReglementJavaFx extends Application{
 		montantBox.getChildren().addAll(labelMontant, montantText);
 		////
 		Button btnPayer = new Button("Payer");
+		btnPayer.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent t) {
+				Espece esp = new Espece(venteSelected, new Date(), venteSelected.getTotalv());
+				espDao.insert(esp);
+				venteSelected.setStat(1);
+				vdb.update(venteSelected);
+				VenteJavaFxVue.charger();
+			}
+		});
 		RegEspece.getChildren().addAll(montantBox, btnPayer);
 		////
 	}

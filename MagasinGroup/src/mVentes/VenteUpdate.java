@@ -190,6 +190,8 @@ public class VenteUpdate extends Application{
             		for(LC ll:LC.getItems()) {
                 		if(ll.getProduitlc().getDesignation().equals(product.getValue())) {
                 			LC.getItems().get(i).setQt(LC.getItems().get(i).getQt()+Integer.parseInt(qte.getText()));
+                			total += LC.getItems().get(i).getSoustotal() * Integer.parseInt(qte.getText());
+                			updateTotalText();
                 			LC.refresh();
                 	    	qte.setText("");
                 	    	product.getSelectionModel().clearSelection();

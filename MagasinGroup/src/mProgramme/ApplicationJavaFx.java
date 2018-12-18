@@ -346,6 +346,7 @@ public class ApplicationJavaFx extends Application{
             	VenteJavaFxVue frmVenteVue = new VenteJavaFxVue();
                 Stage w = new Stage();
                 try {
+                	VenteJavaFxVue.message.setText("");
                 	frmVenteVue.start(w);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -478,20 +479,11 @@ public class ApplicationJavaFx extends Application{
             public void handle(ActionEvent t) {
             	CategorieJavaFxVue frmCat = new CategorieJavaFxVue();
                 Stage w = new Stage();
-                Stage stage; 
                 try {
-                	if(bCat == true){
-                		if(CategorieJavaFxVue.message != null){
-			                stage = (Stage)CategorieJavaFxVue.message.getScene().getWindow();
-			                if(!stage.isShowing()){
-			                	frmCat.start(w);}
-			        }}
-                } catch (Exception e) { System.out.println("Erreur !"); }
-                try {
-                	if(bCat == false){
-                		frmCat.start(w); bCat = true;
-                	}
-                } catch (Exception e) { e.printStackTrace(); }
+					frmCat.start(w);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
             }
         });
 		

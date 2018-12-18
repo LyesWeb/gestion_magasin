@@ -1,6 +1,7 @@
 package mCategories;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -10,11 +11,13 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -24,14 +27,15 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import mTools.Tools;
 
 public class CategorieJavaFxVue extends Application{
-
+	public static boolean bAff = false;
 	public static int prdF = 0;
 	private static TextField txtintitu = new TextField();
 	Button btnAjouter = new Button("Ajouter");
 	Button btnModifier = new Button("Modifier");
-	Button btnSupprimer = new Button("Supprimer");
 	Button btnAnnuler = new Button("Annuler");
 	public static Text message = new Text("");
 	private static Text messageSelect = new Text("");
@@ -168,30 +172,7 @@ public class CategorieJavaFxVue extends Application{
             	
             }
         });
-		pane.getChildren().add(btnSupprimer);
-		btnSupprimer.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-            	try {
-					if(categorieSelected != null){
-	        			deleteCategorie(categorieSelected.getCodecat());
-	        			vider();
-	                	messageSelect.setText("");
-	                	messageAction.setFill(Color.LIMEGREEN);
-	            		messageAction.setText("Categorie bien supprimer.");
-	            	}else{
-	            		messageSelect.setFill(Color.RED);
-	            		messageSelect.setText("Categorie n'est pas selectionné !");
-	            		messageAction.setFill(Color.RED);
-	            		messageAction.setText("Veuillez selectionner une categorie !");
-	            	}
-				} catch (Exception e) {
-					messageSelect.setText("");
-					messageAction.setFill(Color.RED);
-            		messageAction.setText("Erreur !");
-				}
-            }
-        });
+		
 		
 		pane.getChildren().add(btnAnnuler);
 		btnAnnuler.setOnAction(new EventHandler<ActionEvent>() {
@@ -212,6 +193,91 @@ public class CategorieJavaFxVue extends Application{
 		return pane;
 	}
 	
+	private void addButtonToTable() {
+        TableColumn<Categorie, Void> colBtn = new TableColumn("Opérations");
+       
+        
+        
+        Callback<TableColumn<Categorie, Void>, TableCell<Categorie, Void>> cellFactory = new Callback<TableColumn<Categorie, Void>, TableCell<Categorie, Void>>() {
+            @Override
+            public TableCell<Categorie, Void> call(final TableColumn<Categorie, Void> param) {
+                final TableCell<Categorie, Void> cell = new TableCell<Categorie, Void>() {
+                    private final Button btn1 = new Button("");
+
+                    {
+                        btn1.setOnAction((ActionEvent event) -> {
+                        	
+                        	Categorie categorieSelected = getTableView().getItems().get(getIndex());
+                        	Frmafficherproduits frmprods = new Frmafficherproduits();
+                            Stage w = new Stage();
+                            Stage stage; 
+                            try {
+                            	frmprods.start(w);
+                            } catch (Exception e) { System.out.println("Erreur !"); }
+                        });
+                    }
+                    private final Button btn2 = new Button("");
+                    {
+                        btn2.setOnAction((ActionEvent event) -> {
+                        	Categorie categorieSelected = getTableView().getItems().get(getIndex());
+                        	try {
+            					if(categorieSelected != null){
+            	        			deleteCategorie(categorieSelected.getCodecat());
+            	        			vider();
+            	                	messageSelect.setText("");
+            	                	messageAction.setFill(Color.LIMEGREEN);
+            	            		messageAction.setText("Categorie bien supprimer.");
+            	            	}else{
+            	            		messageSelect.setFill(Color.RED);
+            	            		messageSelect.setText("Categorie n'est pas selectionné !");
+            	            		messageAction.setFill(Color.RED);
+            	            		messageAction.setText("Veuillez selectionner une categorie !");
+            	            	}
+            				} catch (Exception e) {
+            					messageSelect.setText("");
+            					messageAction.setFill(Color.RED);
+                        		messageAction.setText("Erreur !");
+            				}
+                        });
+                    }
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                        	ImageView imgview = new ImageView();
+                        	try {
+								imgview=Tools.createImageView("photosStock/Delete.png");
+							} catch (FileNotFoundException e) {
+								e.printStackTrace();
+							}
+                        	imgview.setFitHeight(15);
+                        	imgview.setFitWidth(15);
+                        	btn2.setGraphic(imgview);
+                        	btn2.setPrefHeight(10);
+                        	ImageView imgview2 = new ImageView();
+                        	try {
+								imgview2=Tools.createImageView("photosStock/Affiche.png");
+							} catch (FileNotFoundException e) {
+								e.printStackTrace();
+							}
+                        	imgview2.setFitHeight(15);
+                        	imgview2.setFitWidth(15);
+                        	btn1.setGraphic(imgview2);
+                        	btn1.setPrefHeight(10);
+                        	HBox pane = new HBox(btn2, btn1);
+                        	setGraphic(pane);
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+        colBtn.setCellFactory(cellFactory);
+        table.getColumns().add(colBtn);
+    }
+	
 	private  Pane createContentTop(){
 		Pane pane = new VBox();
 		getCategories();
@@ -222,6 +288,7 @@ public class CategorieJavaFxVue extends Application{
 		intituleCol.setCellValueFactory(new  PropertyValueFactory<>("intitule"));
 		table.getColumns().addAll(codecatCol, intituleCol);
 		table.setItems(categories);
+		addButtonToTable();
 		if(prdF == 1){
 			table.setRowFactory(obj->{
 				TableRow<Categorie> row = new TableRow<>();
