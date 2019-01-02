@@ -112,7 +112,6 @@ public class VenteJavaFxVue extends Application{
             	try {
 					frmAdd.start(w);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
             }
@@ -191,6 +190,7 @@ public class VenteJavaFxVue extends Application{
                         	Stage w = new Stage();
                         	try {
                         		frmReg.start(w);
+                        		//System.out.println("test reggg");
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -206,7 +206,6 @@ public class VenteJavaFxVue extends Application{
                         	try {
 								imgview=Tools.createImageView("photosStock/Delete.png");
 							} catch (FileNotFoundException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
                         	imgview.setFitHeight(15);
@@ -218,7 +217,6 @@ public class VenteJavaFxVue extends Application{
                         	try {
 								imgview2=Tools.createImageView("photosStock/Affiche.png");
 							} catch (FileNotFoundException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
                         	imgview2.setFitHeight(15);

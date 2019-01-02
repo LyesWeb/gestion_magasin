@@ -49,7 +49,7 @@ public class FrmAjouterProduit extends Application{
 	Button btnAjouter = new Button("Ajouter");
 	Button btnAnnuler = new Button("Annuler");
 	ImageView imageproduit;
-    File exist =new File("photosStock/"+ProduitDaoImpl.getCount()+".jpg");
+    File exist =new File("photosStock/thumbnail/"+ProduitDaoImpl.getCount()+".jpg");
 
 	
 	@Override

@@ -597,6 +597,7 @@ public class ApplicationJavaFx extends Application{
 //			message.setText("Erreur !");
 		}
 	}
+	
 	public static void main(String[] args) {
 		Application.launch(args);
 	}

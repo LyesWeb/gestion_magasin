@@ -96,6 +96,7 @@ public class VenteAdd extends Application{
 		dateBox.setMinWidth(333);
 		Text dateTxt = new Text("Date de Vente :");
 		dateBox.getChildren().addAll(dateTxt,date);
+		
 		//##### Date #####//
 
 		//##### ID Vente #####//
@@ -290,8 +291,8 @@ public class VenteAdd extends Application{
 //		totoCol.setCellValueFactory(cellData -> {
 //            return new ReadOnlyIntegerWrapper(22);
 //        });
-		
 //		TableColumn actionsCol = new TableColumn("Actions");
+		
 		productCol.setMinWidth(200);
 		LC.getColumns().addAll(idCol, productCol, prixCol, qteCol);
 //        LC.getColumns().add(totoCol);
@@ -323,7 +324,7 @@ public class VenteAdd extends Application{
             	if(client.getValue()!=null && date.getValue()!=null && LC.getItems().size()>0) {
             		Client clientVente = new Client();
             		java.sql.Date datev = java.sql.Date.valueOf(date.getValue());
-                	newVente = new Vente(idVente, datev,dbClient.getOne(client.getValue()));
+                	newVente = new Vente(idVente, datev, dbClient.getOne(client.getValue()));
                 	newVente.setTotalv(total);
                 	for(LC lc:LC.getItems()) {
                 		newVente.addLC(lc);

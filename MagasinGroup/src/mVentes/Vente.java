@@ -11,7 +11,7 @@ public class Vente {
 	private Date datev;
 	private double totalv;
 	private Client clientv;
-	private int stat;
+	private String stat;
 	ArrayList<LC> lignesCommande = new ArrayList<>();
 	public Vente() {
 		super();
@@ -53,10 +53,10 @@ public class Vente {
 	public void setTotalv(double totalv) {
 		this.totalv = totalv;
 	}
-	public int getStat() {
+	public String getStat() {
 		return stat;
 	}
-	public void setStat(int stat) {
+	public void setStat(String stat) {
 		this.stat = stat;
 	}
 	@Override

@@ -38,7 +38,7 @@ public class VenteDaoImpl implements VenteDao {
 			PreparedStatement ps = conn.prepareStatement("UPDATE vente SET datev=?, idclient=?, stat=? WHERE codev=?");
 			ps.setDate(1, (Date) v.getDatev());
 			ps.setLong(2, v.getClientv().getId());
-			ps.setLong(3, v.getStat());
+			ps.setString(3, v.getStat());
 			ps.setLong(4, v.getCodev());
 			ps.executeUpdate();
 			ps.close();
@@ -77,7 +77,7 @@ public class VenteDaoImpl implements VenteDao {
 				v.setCodev(Long.parseLong(rs.getString(1)));
 				v.setDatev(rs.getDate(2));
 				v.setTotalv(rs.getDouble(3));
-				v.setStat(rs.getInt("stat"));
+				v.setStat(rs.getString("stat"));
 				v.setClientv(new Client(rs.getLong("id"), rs.getString("nom"), rs.getString("prenom"), rs.getString("tele"), rs.getString("email"), rs.getString("adresse")));
 				lesVentes.add(v);
 			}
@@ -104,7 +104,7 @@ public class VenteDaoImpl implements VenteDao {
 				v.setCodev(Long.parseLong(rs.getString(1)));
 				v.setDatev(rs.getDate(2));
 				v.setTotalv(rs.getDouble(3));
-				v.setStat(rs.getInt("stat"));
+				v.setStat(rs.getString("stat"));
 				v.setClientv(new Client(rs.getLong("id"), rs.getString("nom"), rs.getString("prenom"), rs.getString("tele"), rs.getString("email"), rs.getString("adresse")));
 			}
 			conn.close();
